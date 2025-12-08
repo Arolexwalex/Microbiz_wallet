@@ -22,13 +22,12 @@ app.get('/', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Backend is running!' });
 });
 
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/ledger', ledgerRoutes); // Correctly mount ledger routes
-
-app.use('/api', invoicesRoutes);
-app.use('/api', customersRoutes);
-app.use('/api', loansRoutes);
+app.use('/api/invoices', invoicesRoutes);
+app.use('/api/customers', customersRoutes);
+app.use('/api/loans', loansRoutes);
 app.use('/api/recon', reconRoutes); // Correctly mount recon routes
-app.use('/api', creditRoutes);
+app.use('/api/credit', creditRoutes);
 
 module.exports = app;

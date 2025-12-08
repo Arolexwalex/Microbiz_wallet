@@ -31,8 +31,8 @@ class LoanRepository {
     print("Sending to backend: $payload");
 
     try {
-      // THIS IS THE FIX — REMOVE THE /api PREFIX HERE
-      final response = await _dio.post('/loan-applications', data: payload);
+      // The path should match the backend route: /api/loans
+      final response = await _dio.post('/loans', data: payload);
       print("200 OK: ${response.data}");
     } on DioException catch (e) {
       final error = e.response?.data ?? e.message ?? e.message;
@@ -46,6 +46,7 @@ final loanRepositoryProvider = Provider((ref) => LoanRepository(ref.watch(dioPro
 
 // List of applications — also remove /api here
 final loanApplicationsProvider = FutureProvider<List<dynamic>>((ref) async {
-  final response = await ref.read(dioProvider).get('/loan-applications'); // ← NO /api
+  // The path should match the backend route: /api/loans
+  final response = await ref.read(dioProvider).get('/loans');
   return response.data as List;
 });
