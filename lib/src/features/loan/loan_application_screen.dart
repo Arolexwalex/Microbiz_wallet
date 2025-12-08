@@ -18,10 +18,21 @@ class LoanApplicationScreen extends ConsumerStatefulWidget {
 
 class _LoanApplicationScreenState extends ConsumerState<LoanApplicationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _businessNameCtrl = TextEditingController(text: 'Arole Stores');
-  final _amountCtrl = TextEditingController(text: '500000');
-  final _purposeCtrl = TextEditingController(text: 'Buy more inventory');
+  // Declare controllers, but initialize them in initState
+  late final TextEditingController _businessNameCtrl;
+  late final TextEditingController _amountCtrl;
+  late final TextEditingController _purposeCtrl;
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill the form with data from the auth provider
+    final auth = ref.read(authStateProvider);
+    _businessNameCtrl = TextEditingController(text: auth.name ?? '');
+    _amountCtrl = TextEditingController(text: '500000');
+    _purposeCtrl = TextEditingController(text: 'Buy more inventory');
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
