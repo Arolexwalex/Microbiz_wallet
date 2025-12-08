@@ -4,8 +4,9 @@ import 'package:dio/dio.dart';
 import '../state/auth_providers.dart';
 
 final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio(BaseOptions(
-    baseUrl: 'http://localhost:3000/api', // Keep /api here
+  final dio = Dio(BaseOptions( 
+    // IMPORTANT: Use your live backend URL from Render
+    baseUrl: 'https://microbiz-wallet-backend.onrender.com/',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},
