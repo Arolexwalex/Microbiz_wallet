@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Exit the script if any command fails
-set -e
+# Make the script verbose and exit on errors. This helps debugging on Netlify.
+set -euxo pipefail
 
 # The directory to install Flutter into
 FLUTTER_DIR="$HOME/flutter"
