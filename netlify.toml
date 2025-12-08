@@ -1,7 +1,7 @@
 # Netlify configuration for a Flutter Web App
 
 [build]
-  command = "command = "bash netlify/scripts/install_flutter.sh && flutter pub get && flutter build web --web-renderer html""
+  command = "flutter build web --dart-define=FLUTTER_WEB_RENDERER=html"
   publish = "build/web"
 
 [[redirects]]
