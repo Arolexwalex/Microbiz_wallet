@@ -1,16 +1,20 @@
 const mysql = require('mysql');
 require('dotenv').config();
 
-const pool = mysql.createPool({
+const dbConfig = {
   connectionLimit: 10,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  ssl: {
-    rejectUnauthorized: true,
-  },
-});
+};
+
+// Only apply SSL settings in the production environment
+if (process.env.NODE_ENV === 'production') {
+  dbConfig.ssl = { rejectUnauthorized: true };
+}
+
+const pool = mysql.createPool(dbConfig);
 
 pool.getConnection((err, connection) => {
   if (err) {

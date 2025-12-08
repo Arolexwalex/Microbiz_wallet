@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dio_client_provider.dart';
+import 'dio_provider.dart';
 
 class AuthRepository {
   static const String _tokenKey = 'jwt_token';
@@ -10,13 +10,16 @@ class AuthRepository {
   final Ref _ref;
   AuthRepository(this._ref);
 
-  Dio get _dio => _ref.read(dioClientProvider);
+  Dio get _dio => _ref.read(dioProvider);
 
   /// Checks if the backend server is reachable and responding correctly.
   Future<bool> checkBackendStatus() async {
     try {
-      // We use a separate Dio instance to hit the root URL, not the /api base.
-      final healthCheckDio = Dio(BaseOptions(baseUrl: 'http://localhost:3000'));
+      // Use the production URL but remove the '/api' suffix for the root health check.
+      final baseUrl = _ref.read(dioProvider).options.baseUrl;
+      final rootUrl = baseUrl.replaceAll('/api', '');
+
+      final healthCheckDio = Dio(BaseOptions(baseUrl: rootUrl));
       final response = await healthCheckDio.get('/');
       if (response.statusCode == 200 && response.data['status'] == 'ok') {
         print('✅ Backend connection successful: ${response.data['message']}');
@@ -55,7 +58,7 @@ class AuthRepository {
 
   Future<Map<String, dynamic>> signUp({required String username, required String email, required String password}) async {
     try {
-      final response = await _dio.post('/register', data: {
+      final response = await _dio.post('/auth/register', data: {
         'username': username,
         'email': email,
         'password': password,
@@ -68,7 +71,7 @@ class AuthRepository {
 
   Future<Map<String, dynamic>> login({required String username, required String password}) async {
     try {
-      final response = await _dio.post('/login', data: {
+      final response = await _dio.post('/auth/login', data: {
         'username': username,
         'password': password,
       });
