@@ -1,7 +1,7 @@
 # Netlify configuration for a Flutter Web App
 
 [build]
-  command = "bash .netlify/install_flutter_and_build.sh"
+  command = "bash install_flutter_and_build.sh"
   publish = "build/web"
 
 [[redirects]]
