@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mono Connect</title>
+    <script src="https://connect.withmono.com/connect.js"></script>
+</head>
+<body>
+
+<script>
+    function setupMonoConnect(key) {
+        const monoConnect = new Mono.Connect({
+            key: key,
+            onSuccess: function(response) {
+                // The user has successfully linked their account.
+                // The `response.code` is the authorization code.
+                // Send this code to your Flutter app.
+                if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                    window.flutter_inappwebview.callHandler('onSuccess', response.code);
+                }
+            },
+            onClose: function() {
+                // The user closed the widget.
+                if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                    window.flutter_inappwebview.callHandler('onClose');
+                }
+            }
+        });
+        monoConnect.setup();
+        monoConnect.open();
+    }
+</script>
+</body>
+</html>
