@@ -1,0 +1,10 @@
+# Netlify configuration for a Flutter Web App
+
+[build]
+  command = "flutter build web --web-renderer html"
+  publish = "build/web"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
