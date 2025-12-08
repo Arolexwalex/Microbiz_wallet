@@ -1,28 +1,17 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+// config/db.js
+const { Pool } = require('pg');
 
-const dbConfig = {
+const pool = new Pool({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 5432,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  connectTimeout: 20000,
-};
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  max: 20,
+});
 
-// Only apply SSL settings in the production environment
-if (process.env.NODE_ENV === 'production') {
-  console.log('Production environment detected. Applying SSL configuration.');
-  dbConfig.ssl = {
-    rejectUnauthorized: true,
-  };
-}
-
-const pool = mysql.createPool(dbConfig); // This now returns a promise-based pool
-
-// We can now export the pool directly. The promise-based nature of mysql2
-// handles connection acquisition and release much more gracefully.
+pool.on('connect', () => console.log('Database connected'));
+pool.on('error', (err) => console.error('DB error:', err));
 
 module.exports = pool;
