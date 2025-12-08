@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 
 const dbConfig = {
   connectionLimit: 10,
@@ -11,7 +13,10 @@ const dbConfig = {
 
 // Only apply SSL settings in the production environment
 if (process.env.NODE_ENV === 'production') {
-  dbConfig.ssl = { rejectUnauthorized: true };
+  dbConfig.ssl = {
+    // Read the CA certificate from the file system
+    ca: fs.readFileSync(path.join(__dirname, 'ca.pem')),
+  };
 }
 
 const pool = mysql.createPool(dbConfig);
