@@ -13,10 +13,18 @@ const dbConfig = {
 
 // Only apply SSL settings in the production environment
 if (process.env.NODE_ENV === 'production') {
-  dbConfig.ssl = {
-    // Read the CA certificate from the file system
-    ca: fs.readFileSync(path.join(__dirname, 'ca.pem')),
-  };
+  const caPath = path.join(__dirname, 'ca.pem');
+  if (fs.existsSync(caPath)) {
+    console.log('Found ca.pem, applying CA certificate for SSL.');
+    dbConfig.ssl = {
+      ca: fs.readFileSync(caPath),
+    };
+  } else {
+    console.log('ca.pem not found, falling back to default SSL verification.');
+    dbConfig.ssl = {
+      rejectUnauthorized: true,
+    };
+  }
 }
 
 const pool = mysql.createPool(dbConfig);
