@@ -17,12 +17,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () async {
       if (!mounted) return;
-      final isOnboardingCompleted = await ref.read(onboardingCompletedProvider.future);
+      final onboardingCompleted = await ref.read(onboardingCompletedProvider.future);
 
       if (!mounted) return;
-      if (isOnboardingCompleted) {
-        context.go('/home'); // Or '/' and let the router redirect
-      } else {
+      // The main router now handles redirection based on auth state.
+      // We just need to decide if we show onboarding or go to the main app flow.
+      if (onboardingCompleted) {
+        context.go('/login'); // Go to login, router will redirect to /home if logged in
+      } else { 
         context.go('/onboarding');
       }
     });
@@ -38,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           children: [
             Image.asset('assets/images/vector.png', width: 280, height: 120),
             const SizedBox(height: 24),
-            const Text('MicroBiz\nWallet', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold)),
+            const Text('myMicroBiz', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold)),
           ],
         ),
       ),

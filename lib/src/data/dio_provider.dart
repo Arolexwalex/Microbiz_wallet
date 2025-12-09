@@ -1,7 +1,7 @@
 // lib/src/data/dio_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
-import '../state/auth_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   // This is your live backend URL — never changes
@@ -14,9 +14,10 @@ final dioProvider = Provider<Dio>((ref) {
   // Automatically adds your login token to every request
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) {
-      final token = ref.read(authStateProvider).token;
-      if (token != null && token.isNotEmpty) {
-        options.headers['x-access-token'] = token;
+      // Get the token from the current Supabase session
+      final accessToken = Supabase.instance.client.auth.currentSession?.accessToken;
+      if (accessToken != null) {
+        options.headers['Authorization'] = 'Bearer $accessToken';
       }
       handler.next(options);
     },

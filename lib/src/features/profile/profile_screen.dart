@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart'; // Added for context.go()
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/curved_header.dart';
 import '../../theme/theme.dart';
-import '../../state/auth_providers.dart';
 import '../../state/biometric_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -12,7 +12,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
+    final currentUser = Supabase.instance.client.auth.currentUser;
     final biometricEnabled = ref.watch(biometricEnabledProvider);
 
     void showLogoutDialog() {
@@ -28,7 +28,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
             TextButton(
               onPressed: () async {
-                await ref.read(authStateProvider.notifier).logout();
+                await Supabase.instance.client.auth.signOut();
                 if (context.mounted) {
                   Navigator.pop(context);
                   context.go('/login');
@@ -114,22 +114,22 @@ class ProfileScreen extends ConsumerWidget {
                             ListTile(
                               leading: const Icon(Icons.person_outline, color: AppColors.primary),
                               title: const Text('Full Name'),
-                              subtitle: Text(authState.name ?? 'Not set'),
+                              subtitle: Text(currentUser?.userMetadata?['username'] ?? 'Not set'),
                             ),
                             ListTile(
                               leading: const Icon(Icons.email_outlined, color: AppColors.primary),
                               title: const Text('Email'),
-                              subtitle: Text(authState.email ?? 'Not set'),
+                              subtitle: Text(currentUser?.email ?? 'Not set'),
                             ),
                             ListTile(
                               leading: const Icon(Icons.phone_outlined, color: AppColors.primary),
                               title: const Text('Phone'),
-                              subtitle: Text(authState.phone ?? 'Not set'),
+                              subtitle: Text(currentUser?.phone ?? 'Not set'),
                             ),
                             ListTile(
                               leading: const Icon(Icons.calendar_today_outlined, color: AppColors.primary),
                               title: const Text('Date of Birth'),
-                              subtitle: Text(authState.dob?.split('T')[0] ?? 'Not set'),
+                              subtitle: const Text('Not set'), // This data is not in Supabase by default
                             ),
                             const SizedBox(height: 8),
                             TextButton(

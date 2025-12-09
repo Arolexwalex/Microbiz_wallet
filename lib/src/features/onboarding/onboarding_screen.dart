@@ -72,7 +72,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
             // App name below logo
             const Text(
-              'MicroBiz\nWallet',
+              'myMicroBiz',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 48,
@@ -113,9 +113,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   if (!isWeb)
                     Align(
                       alignment: Alignment.topRight,
-                      child: TextButton(
-                        onPressed: () {
-                          ref.read(authStateProvider.notifier).markOnboardingCompleted();
+                      child: TextButton(onPressed: () async {
+                          final prefs = await ref.read(sharedPreferencesProvider.future);
+                          await prefs.setBool('onboarding_completed', true);
                           context.go('/login');
                         },
                         child: const Text('Skip', style: TextStyle(color: Colors.grey)),
@@ -184,15 +184,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               SizedBox(
                                 width: isWeb ? 400 : double.infinity,
                                 height: 60,
-                                child: ElevatedButton(
-                                  onPressed: () {
+                                child: ElevatedButton(onPressed: () async {
                                     if (_currentIndex < _pages.length - 1) {
                                       _controller.nextPage(
                                         duration: const Duration(milliseconds: 400),
                                         curve: Curves.easeInOut,
                                       );
                                     } else {
-                                      ref.read(authStateProvider.notifier).markOnboardingCompleted();
+                                      final prefs = await ref.read(sharedPreferencesProvider.future);
+                                      await prefs.setBool('onboarding_completed', true);
                                       context.go('/login');
                                     }
                                   },

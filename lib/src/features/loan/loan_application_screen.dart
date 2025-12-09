@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../theme/theme.dart';
 import '../../widgets/curved_header.dart';
 import 'loan_providers.dart';
-import '../../state/auth_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoanApplicationScreen extends ConsumerStatefulWidget {
   final String lender;
@@ -27,9 +27,9 @@ class _LoanApplicationScreenState extends ConsumerState<LoanApplicationScreen> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill the form with data from the auth provider
-    final auth = ref.read(authStateProvider);
-    _businessNameCtrl = TextEditingController(text: auth.name ?? '');
+    // Pre-fill the form with data from the Supabase user
+    final user = Supabase.instance.client.auth.currentUser;
+    _businessNameCtrl = TextEditingController(text: user?.userMetadata?['username'] ?? '');
     _amountCtrl = TextEditingController(text: '500000');
     _purposeCtrl = TextEditingController(text: 'Buy more inventory');
   }
@@ -39,7 +39,7 @@ class _LoanApplicationScreenState extends ConsumerState<LoanApplicationScreen> {
 
     setState(() => _submitting = true);
 
-    final auth = ref.read(authStateProvider);
+    final user = Supabase.instance.client.auth.currentUser;
 
     try {
       await ref.read(loanRepositoryProvider).submitApplication(
@@ -47,9 +47,6 @@ class _LoanApplicationScreenState extends ConsumerState<LoanApplicationScreen> {
             amount: int.parse(_amountCtrl.text.replaceAll(RegExp(r'[^0-9]'), '')),
             purpose: _purposeCtrl.text.trim(),
             lender: widget.lender,
-            userId: auth.userId ?? 2,
-            phone: auth.phone ?? "08012345678",
-            email: auth.email ?? "demo@microbiz.com",
           );
 
       ScaffoldMessenger.of(context).showSnackBar(

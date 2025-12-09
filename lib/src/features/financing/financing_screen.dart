@@ -22,6 +22,8 @@ class FinancingScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
+
+                      
                       onPressed: () => context.go('/home'),
                       icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 32),
                     ),
@@ -53,7 +55,7 @@ class FinancingScreen extends StatelessWidget {
               children: [
                 _card(context, 'Credit Score', 'Check your business credit readiness', Icons.bar_chart_rounded, const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFFA29BFE)]), '/credit-score'),
                 _card(context, 'Loan Status', 'Track your loan applications', Icons.history_edu_rounded, const LinearGradient(colors: [Color(0xFF00B894), Color(0xFF55E6C1)]), '/loan-status'),
-                _card(context, 'Apply for Loan', 'Get funding for your business', Icons.request_page_rounded, const LinearGradient(colors: [Color(0xFFFD79A8), Color(0xFFFDCFE8)]), '/apply-for-loan'),
+                _card(context, 'Apply for Loan', 'Get funding for your business', Icons.request_page_rounded, const LinearGradient(colors: [Color(0xFFFD79A8), Color(0xFFFDCFE8)]), '/apply-for-loan/Generic'),
                 _card(context, 'Connect Bank', 'Link account for instant verification', Icons.account_balance_rounded, const LinearGradient(colors: [Color(0xFF0984E3), Color(0xFF74B9FF)]), '/bank-connect'),
                 _card(context, 'Government Support', 'Grants, SMEDAN, BOI programs', Icons.volunteer_activism_rounded, const LinearGradient(colors: [Color(0xFFFF7675), Color(0xFFFDCB6E)]), '/support'),
                 _card(context, 'Auto-Reconcile', 'Match bank transactions automatically', Icons.sync_alt_rounded, const LinearGradient(colors: [Color(0xFF00CEC9), Color(0xFF81ECEC)]), '/recon'),

@@ -1,19 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:intl/intl.dart';
 import '../data/ledger_repository.dart';
 import '../domain/record.dart';
-import 'auth_providers.dart'; // Import auth_providers
-import '../data/dio_provider.dart'; // Import dioProvider
+import 'auth_providers.dart';
 
 final ledgerRepositoryProvider = Provider<LedgerRepository>((ref) {
-  return LedgerRepository(ref.watch(dioProvider));
+  // The repository now needs the Supabase client
+  return LedgerRepository(ref.read(supabaseProvider));
 });
 
 final ledgerRecordsProvider = FutureProvider.autoDispose<List<LedgerRecord>>((ref) async {
-  final authState = ref.watch(authStateProvider);
-  if (!authState.isAuthenticated || authState.token == null) {
-    return []; // Return empty list if not authenticated
+  // Depend on the new Supabase auth provider
+  final authState = ref.watch(authStateChangesProvider);
+  if (authState.value?.session?.user == null) {
+    return []; // Return empty list if not authenticated or still loading
   }
   return ref.read(ledgerRepositoryProvider).getAllRecords();
 });

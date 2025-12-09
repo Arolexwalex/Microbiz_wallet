@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_new_microbiz_wallet/src/state/auth_providers.dart';
 import '../../theme/theme.dart';
 import '../../widgets/curved_header.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -32,21 +32,34 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
+      // Use Supabase for authentication
       try {
-        await ref.read(authStateProvider.notifier).signUp(
-          username: _usernameController.text,
+        final authResponse = await Supabase.instance.client.auth.signUp(
           email: _emailController.text,
           password: _passwordController.text,
+          data: {'username': _usernameController.text}, // Optional: store username
         );
+
+        // Check if signup was successful and a user was created
+        // Supabase sends a confirmation email by default.
         if (mounted) {
           context.go('/login');
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration successful! Please log in.')),
+            const SnackBar(
+                content: Text(
+                    'Registration successful! Please check your email to verify.')),
           );
+        }
+      } on AuthException catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Sign-up Failed: ${e.message}')));
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign-up failed: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An unexpected error occurred: $e. Please try again.')),
+          );
         }
       } finally {
         setState(() => _isLoading = false);

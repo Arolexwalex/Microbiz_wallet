@@ -1,52 +1,51 @@
-// lib/src/features/loan/loan_providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
-import '../../data/dio_provider.dart';
+import 'package:new_new_microbiz_wallet/src/domain/loan_model.dart'; // Correctly uses the freezed model
+import 'package:new_new_microbiz_wallet/src/state/auth_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoanRepository {
-  final Dio _dio;
-  LoanRepository(this._dio);
+  final SupabaseClient _supabase;
+
+  LoanRepository(this._supabase);
 
   Future<void> submitApplication({
     required String businessName,
     required int amount,
     required String purpose,
     required String lender,
-    required int userId,
-    required String phone,
-    required String email,
   }) async {
-    final payload = {
-      "business_name": businessName,
-      "amount": amount,
-      "purpose": purpose,
-      "lender": lender,
-      "source": "MicroBiz Wallet",
-      "status": "pending",
-      "user_id": userId,
-      "phone": phone,
-      "email": email,
-    };
-
-    print("Sending to backend: $payload");
-
     try {
-      // The path should match the backend route: /api/loans
-      final response = await _dio.post('/loans', data: payload);
-      print("200 OK: ${response.data}");
-    } on DioException catch (e) {
-      final error = e.response?.data ?? e.message ?? e.message;
-      print("ERROR: $error");
-      throw Exception(error);
+      // The user_id is handled automatically by Supabase policies
+      await _supabase.from('loan_applications').insert({
+        'business_name': businessName,
+        'amount_requested': amount,
+        'purpose': purpose,
+        'lender_name': lender,
+      });
+    } catch (e) {
+      print('Loan submission error: $e');
+      throw Exception('Failed to submit loan application.');
+    }
+  }
+
+  Future<List<LoanApplication>> getApplications() async {
+    try {
+      final data = await _supabase
+          .from('loan_applications')
+          .select()
+          .order('created_at', ascending: false);
+      return data.map((item) => LoanApplication.fromJson(item)).toList();
+    } catch (e) {
+      print('Loan fetch error: $e');
+      throw Exception('Failed to fetch loan applications.');
     }
   }
 }
 
-final loanRepositoryProvider = Provider((ref) => LoanRepository(ref.watch(dioProvider)));
+final loanRepositoryProvider = Provider<LoanRepository>((ref) {
+  return LoanRepository(ref.read(supabaseProvider));
+});
 
-// List of applications — also remove /api here
-final loanApplicationsProvider = FutureProvider<List<dynamic>>((ref) async {
-  // The path should match the backend route: /api/loans
-  final response = await ref.read(dioProvider).get('/loans');
-  return response.data as List;
+final loanApplicationsProvider = FutureProvider.autoDispose<List<LoanApplication>>((ref) {
+  return ref.watch(loanRepositoryProvider).getApplications();
 });

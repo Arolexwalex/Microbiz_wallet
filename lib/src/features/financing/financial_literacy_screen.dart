@@ -51,6 +51,8 @@ class _FinancialLiteracyScreenState extends State<FinancialLiteracyScreen> {
                     const Text('Bookkeeping Basics', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     YoutubePlayer(
                       controller: _controller,
+                      // Using a key helps prevent web-specific initialization errors
+                      key: const ValueKey('youtube_player'),
                       showVideoProgressIndicator: true,
                     ),
                     const SizedBox(height: 16),

@@ -41,17 +41,17 @@ class _AddExpensesScreenState extends ConsumerState<AddExpensesScreen> {
 
     try {
       final amount = double.parse(_amountController.text.replaceAll(',', ''));
-      final record = LedgerRecord(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        date: _selectedDate,
-        category: _category,
-        amountKobo: (amount * 100).toInt(),
-        title: _titleController.text.trim(),
-        note: _noteController.text.trim(),
-        type: RecordType.expense,
-      );
+      // The user_id is automatically set by the database thanks to RLS policies
+      final recordData = {
+        'date': _selectedDate.toIso8601String(),
+        'category': _category,
+        'amount_kobo': (amount * 100).toInt(),
+        'description': _titleController.text.trim(),
+        // 'note': _noteController.text.trim(), // Your DB schema doesn't have a 'note' column yet
+        'type': 'expense',
+      };
 
-      await ref.read(ledgerRepositoryProvider).add(record);
+      await ref.read(ledgerRepositoryProvider).createRecord(recordData);
       ref.invalidate(ledgerRecordsProvider); // Refresh the list of records
 
       if (mounted) {

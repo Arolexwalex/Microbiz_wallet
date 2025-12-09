@@ -39,10 +39,10 @@ class LedgerRecord {
   factory LedgerRecord.fromJson(Map<String, dynamic> json) {
     return LedgerRecord(
       id: json['id'].toString(),
-      title: json['title'] ?? '',
-      amountKobo: (json['amountKobo'] is num)
-          ? (json['amountKobo'] as num).toInt()
-          : int.tryParse(json['amountKobo'].toString()) ?? 0,
+      title: json['description'] ?? '', // Match 'description' column from Supabase
+      amountKobo: (json['amount_kobo'] is num) // Match 'amount_kobo' column from Supabase
+          ? (json['amount_kobo'] as num).toInt()
+          : int.tryParse(json['amount_kobo'].toString()) ?? 0,
       date: DateTime.parse(json['date']),
       category: json['category'] ?? 'General',
       note: json['note'] ?? '',
