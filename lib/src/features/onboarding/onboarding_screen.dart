@@ -129,89 +129,92 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       itemCount: _pages.length,
                       itemBuilder: (context, index) {
                         final page = _pages[index];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isWeb ? 80 : 32,
-                            vertical: 40,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Image
-                              Expanded(
-                                flex: isWeb ? 4 : 3,
-                                child: Image.asset(
-                                  page['image']!,
-                                  fit: BoxFit.contain,
-                                  width: isWeb ? 500 : screenWidth * 0.8,
+                        // Use a SingleChildScrollView to prevent overflow on smaller mobile screens
+                        return SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isWeb ? 80 : 32,
+                              vertical: 24,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Give the image a flexible height but prevent it from becoming too small
+                                SizedBox(
+                                  height: screenHeight * (isWeb ? 0.4 : 0.35),
+                                  child: Image.asset(
+                                    page['image']!,
+                                    fit: BoxFit.contain,
+                                    width: isWeb ? 500 : screenWidth * 0.8,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 48),
-
-                              // Title
-                              Text(
-                                page['title']!,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: isWeb ? 42 : 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                  height: 1.3,
+                                const SizedBox(height: 48),
+                        
+                                // Title
+                                Text(
+                                  page['title']!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: isWeb ? 42 : 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                    height: 1.3,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 60),
-
-                              // Dots
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(
-                                  _pages.length,
-                                  (i) => AnimatedContainer(
-                                    duration: const Duration(milliseconds: 300),
-                                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                                    width: i == _currentIndex ? 28 : 10,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      color: i == _currentIndex ? AppColors.primary : Colors.grey.shade300,
-                                      borderRadius: BorderRadius.circular(12),
+                                const SizedBox(height: 60),
+                        
+                                // Dots
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    _pages.length,
+                                    (i) => AnimatedContainer(
+                                      duration: const Duration(milliseconds: 300),
+                                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                                      width: i == _currentIndex ? 28 : 10,
+                                      height: 10,
+                                      decoration: BoxDecoration(
+                                        color: i == _currentIndex ? AppColors.primary : Colors.grey.shade300,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 60),
-
-                              // Button
-                              SizedBox(
-                                width: isWeb ? 400 : double.infinity,
-                                height: 60,
-                                child: ElevatedButton(onPressed: () async {
-                                    if (_currentIndex < _pages.length - 1) {
-                                      _controller.nextPage(
-                                        duration: const Duration(milliseconds: 400),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    } else {
-                                      final prefs = await ref.read(sharedPreferencesProvider.future);
-                                      await prefs.setBool('onboarding_completed', true);
-                                      context.go('/login');
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                    elevation: 10,
-                                    shadowColor: AppColors.primary.withOpacity(0.5),
-                                  ),
-                                  child: Text(
-                                    _currentIndex == _pages.length - 1 ? 'Get Started' : 'Next',
-                                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                const SizedBox(height: 60),
+                        
+                                // Button
+                                SizedBox(
+                                  width: isWeb ? 400 : double.infinity,
+                                  height: 60,
+                                  child: ElevatedButton(onPressed: () async {
+                                      if (_currentIndex < _pages.length - 1) {
+                                        _controller.nextPage(
+                                          duration: const Duration(milliseconds: 400),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      } else {
+                                        final prefs = await ref.read(sharedPreferencesProvider.future);
+                                        await prefs.setBool('onboarding_completed', true);
+                                        context.go('/login');
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                      elevation: 10,
+                                      shadowColor: AppColors.primary.withOpacity(0.5),
+                                    ),
+                                    child: Text(
+                                      _currentIndex == _pages.length - 1 ? 'Get Started' : 'Next',
+                                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                 ),
-                              ),
-
-                              if (isWeb) const SizedBox(height: 40),
-                            ],
+                        
+                                if (isWeb) const SizedBox(height: 40),
+                              ],
+                            ),
                           ),
                         );
                       },

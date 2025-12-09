@@ -15,8 +15,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  int _selectedIndex = 0;
-
   static const _services = [
     {'icon': Icons.add_chart_rounded, 'label': 'Add Sales', 'route': '/add-sales'},
     {'icon': Icons.request_quote_rounded, 'label': 'Add Expense', 'route': '/add-expenses'},
@@ -26,12 +24,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     {'icon': Icons.history_rounded, 'label': 'Ledger', 'route': '/ledger'},
   ];
 
-  void _onNavTap(int index) {
-    setState(() => _selectedIndex = index);
-    final routes = ['/home', '/reports', '/financing', '/financial-literacy', '/profile'];
-    context.go(routes[index]);
-  }
-
   @override
   Widget build(BuildContext context) {
     final isWeb = MediaQuery.of(context).size.width >= 900;
@@ -40,22 +32,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       backgroundColor: AppColors.background,
       body: Row(
         children: [
-          if (isWeb)
-            // NavigationRail(
-            //   selectedIndex: _selectedIndex,
-            //   onDestinationSelected: _onNavTap,
-            //   backgroundColor: AppColors.surface,
-            //   indicatorColor: AppColors.primary.withOpacity(0.15),
-            //   labelType: NavigationRailLabelType.all,
-            //   destinations: const [
-            //     NavigationRailDestination(icon: Icon(Icons.home_rounded), selectedIcon: Icon(Icons.home), label: Text('Home')),
-            //     NavigationRailDestination(icon: Icon(Icons.analytics_rounded), selectedIcon: Icon(Icons.analytics), label: Text('Reports')),
-            //     NavigationRailDestination(icon: Icon(Icons.account_balance_rounded), selectedIcon: Icon(Icons.account_balance), label: Text('Financing')),
-            //     NavigationRailDestination(icon: Icon(Icons.school_rounded), selectedIcon: Icon(Icons.school), label: Text('Literacy')),
-            //     NavigationRailDestination(icon: Icon(Icons.person_rounded), selectedIcon: Icon(Icons.person), label: Text('Profile')),
-            //   ],
-            // ),
-
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -84,24 +60,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ],
       ),
-
-      bottomNavigationBar: isWeb
-          ? null
-          : BottomNavigationBar(
-              currentIndex: _selectedIndex,
-              onTap: _onNavTap,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: AppColors.primary,
-              unselectedItemColor: Colors.grey.shade600,
-              backgroundColor: AppColors.surface,
-              items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-                BottomNavigationBarItem(icon: Icon(Icons.analytics_rounded), label: 'Reports'),
-                BottomNavigationBarItem(icon: Icon(Icons.account_balance_rounded), label: 'Financing'),
-                BottomNavigationBarItem(icon: Icon(Icons.school_rounded), label: 'Literacy'),
-                BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
-              ],
-            ),
     );
   }
 
@@ -131,9 +89,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
             child: Column(
               children: [
-                Row(
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  runSpacing: 24,
+                  spacing: 32,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -161,12 +123,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     ),
                     Column(
                       children: [
-                        Icon(
-                          isPositive ? Icons.sentiment_very_satisfied_rounded : Icons.sentiment_dissatisfied_rounded,
-                          color: Colors.white.withOpacity(0.9),
-                          size: 100,
-                        ),
-                        const SizedBox(height: 20),
+                        if (!isPositive) ...[
+                          Icon(
+                            Icons.sentiment_dissatisfied_rounded,
+                            color: Colors.white.withOpacity(0.9),
+                            size: 100,
+                          ),
+                          const SizedBox(height: 20),
+                        ],
                         SizedBox(
                           width: 220, // ← THIS FIXES THE INFINITE WIDTH CRASH
                           child: ElevatedButton.icon(

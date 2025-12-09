@@ -7,7 +7,7 @@ part of 'invoice_model.dart';
 // **************************************************************************
 
 _Invoice _$InvoiceFromJson(Map<String, dynamic> json) => _Invoice(
-  id: json['id'] as String,
+  id: (json['id'] as num?)?.toInt(),
   customerId: (json['customerId'] as num?)?.toInt(),
   customerName: json['customerName'] as String,
   customerEmail: json['customerEmail'] as String,
@@ -39,12 +39,12 @@ Map<String, dynamic> _$InvoiceToJson(_Invoice instance) => <String, dynamic>{
 _InvoiceItem _$InvoiceItemFromJson(Map<String, dynamic> json) => _InvoiceItem(
   description: json['description'] as String,
   quantity: (json['quantity'] as num).toInt(),
-  unitPrice: (json['unitPrice'] as num).toDouble(),
+  unitPriceKobo: (json['unitPriceKobo'] as num).toInt(),
 );
 
 Map<String, dynamic> _$InvoiceItemToJson(_InvoiceItem instance) =>
     <String, dynamic>{
       'description': instance.description,
       'quantity': instance.quantity,
-      'unitPrice': instance.unitPrice,
+      'unitPriceKobo': instance.unitPriceKobo,
     };

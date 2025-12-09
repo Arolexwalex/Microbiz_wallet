@@ -1,22 +1,20 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:new_new_microbiz_wallet/src/data/dio_provider.dart';
 import 'package:new_new_microbiz_wallet/src/domain/customer.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_providers.dart';
 
 class CustomerRepository {
-  final Dio _dio;
-  CustomerRepository(this._dio);
+  final SupabaseClient _supabase;
+  CustomerRepository(this._supabase);
 
   Future<List<Customer>> getAllCustomers() async {
     try {
-      final response = await _dio.get('/customers');
-      print('Customers API Response: ${response.data}');
-      final data = response.data as List;
+      final data = await _supabase.from('customers').select().order('name', ascending: true);
       return data.map((customer) => Customer.fromMap(customer)).toList();
-    } on DioException catch (e) {
-      throw Exception('Failed to load customers: ${e.message}');
+    } catch (e) {
+      print('Customer fetch error: $e');
+      throw Exception('Failed to load customers.');
     }
   }
 
@@ -27,21 +25,21 @@ class CustomerRepository {
     String? address,
   }) async {
     try {
-      final response = await _dio.post('/customers', data: {
+      final response = await _supabase.from('customers').insert({
         'name': name,
         'email': email,
         'phone': phone,
         'address': address,
-      });
-      return Customer(id: response.data['id'], name: name, email: email, phone: phone, address: address);
-    } on DioException catch (e) {
-      throw Exception('Failed to create customer: ${e.response?.data['message'] ?? e.message}');
+      }).select().single();
+      return Customer.fromMap(response);
+    } catch (e) {
+      throw Exception('Failed to create customer: $e');
     }
   }
 }
 
 final customerRepositoryProvider = Provider<CustomerRepository>((ref) {
-  return CustomerRepository(ref.watch(dioProvider));
+  return CustomerRepository(ref.watch(supabaseProvider));
 });
 
 final customersProvider = FutureProvider.autoDispose<List<Customer>>((ref) async {
@@ -57,10 +55,9 @@ class CustomerNotifier extends StateNotifier<AsyncValue<void>> {
   final Ref _ref;
   CustomerNotifier(this._ref) : super(const AsyncData(null));
 
-  Future<Customer> createCustomer(Customer customer) async {
+  Future<Customer> createCustomer(String name) async {
     state = const AsyncLoading();
-    final newCustomer = await _ref.read(customerRepositoryProvider).createCustomer(
-        name: customer.name, email: customer.email, phone: customer.phone, address: customer.address);
+    final newCustomer = await _ref.read(customerRepositoryProvider).createCustomer(name: name);
     _ref.invalidate(customersProvider); // Refresh the customer list
     state = const AsyncData(null);
     return newCustomer;

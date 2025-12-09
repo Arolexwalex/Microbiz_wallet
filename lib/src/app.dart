@@ -18,6 +18,7 @@ import 'features/score/business_health_screen.dart';
 import 'features/profile/profile_screen.dart';
 import 'features/financing/bank_connect_screen.dart';
 import 'features/financing/support_screen.dart';
+import 'features/loan/select_lender_screen.dart';
 import 'features/reports/reports_screen.dart';
 import 'features/financing/financial_literacy_screen.dart';
 import 'features/loan/loan_application_screen.dart';
@@ -28,10 +29,11 @@ import 'features/reconcile/view.dart';
 import 'features/dashboard/dashboard_screen.dart' as dashboard;
 import 'features/onboarding/onboarding_screen.dart' as onboarding;
 import 'features/invoice/invoice_list_screen.dart';
-import 'features/invoice/invoice_create_screen.dart';
+import 'features/invoice/invoice_create_screen.dart' hide Text;
 import 'features/invoice/invoice_detail_screen.dart';
 import 'features/invoice/debt_tracker_screen.dart';
 import 'features/loan/loan_status_screen.dart';
+import 'features/main_layout.dart';
 
 class MicroBizApp extends ConsumerWidget {
   const MicroBizApp({super.key});
@@ -83,9 +85,14 @@ class MicroBizApp extends ConsumerWidget {
             GoRoute(path: '/credit-score', builder: (_, __) => const CreditScoreScreen()),
             GoRoute(path: '/invoices', builder: (_, __) => const InvoiceListScreen()),
             GoRoute(path: '/invoice/create', builder: (_, __) => const InvoiceCreateScreen()),
-            GoRoute(path: '/invoice/:id', builder: (context, state) => InvoiceDetailScreen(invoiceId: state.pathParameters['id']!)),
+            GoRoute(
+              path: '/invoice/:id',
+              builder: (context, state) =>
+                  InvoiceDetailScreen(invoiceId: int.parse(state.pathParameters['id']!)),
+            ),
             GoRoute(path: '/debts', builder: (_, __) => const DebtTrackerScreen()),
             GoRoute(path: '/loan-status', builder: (_, __) => const LoanStatusScreen()),
+            GoRoute(path: '/select-lender', builder: (_, __) => const SelectLenderScreen()),
             GoRoute(path: '/apply-for-loan/:lender', builder: (context, state) => LoanApplicationScreen(lender: state.pathParameters['lender']!)),
 
             // Add the missing routes for adding sales and expenses
@@ -107,57 +114,6 @@ class MicroBizApp extends ConsumerWidget {
       theme: buildLightTheme(),
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-    );
-  }
-}
-
-// MAIN LAYOUT — PERSISTENT NAVIGATION
-class MainLayout extends StatelessWidget {
-  final Widget child;
-  const MainLayout({super.key, required this.child});
-
-  static const _tabs = ['/home', '/reports', '/financing', '/financial-literacy', '/profile'];
-
-  @override
-  Widget build(BuildContext context) {
-    final isWeb = MediaQuery.of(context).size.width >= 900;
-    final currentPath = GoRouterState.of(context).uri.path;
-    int selectedIndex = _tabs.indexWhere((tab) => currentPath.startsWith(tab));
-    if (selectedIndex == -1) selectedIndex = 0;
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Row(
-        children: [
-          if (isWeb)
-            NavigationRail(
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (i) => context.go(_tabs[i]),
-              destinations: const [
-                NavigationRailDestination(icon: Icon(Icons.home_rounded), label: Text('Home')),
-                NavigationRailDestination(icon: Icon(Icons.bar_chart_rounded), label: Text('Reports')),
-                NavigationRailDestination(icon: Icon(Icons.account_balance_rounded), label: Text('Financing')),
-                NavigationRailDestination(icon: Icon(Icons.school_rounded), label: Text('Literacy')),
-                NavigationRailDestination(icon: Icon(Icons.person_rounded), label: Text('Profile')),
-              ],
-            ),
-          Expanded(child: child),
-        ],
-      ),
-      bottomNavigationBar: isWeb
-          ? null
-          : BottomNavigationBar(
-              currentIndex: selectedIndex,
-              onTap: (i) => context.go(_tabs[i]),
-              type: BottomNavigationBarType.fixed,
-              items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-                BottomNavigationBarItem(icon: Icon(Icons.bar_chart_rounded), label: 'Reports'),
-                BottomNavigationBarItem(icon: Icon(Icons.account_balance_rounded), label: 'Financing'),
-                BottomNavigationBarItem(icon: Icon(Icons.school_rounded), label: 'Literacy'),
-                BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
-              ],
-            ),
     );
   }
 }

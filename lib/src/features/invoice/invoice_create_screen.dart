@@ -18,43 +18,64 @@ class InvoiceCreateScreen extends ConsumerStatefulWidget {
 class _InvoiceCreateScreenState extends ConsumerState<InvoiceCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _numberCtrl = TextEditingController();
-  Customer? _customer;
+  final _customerNameCtrl = TextEditingController();
   DateTime _issued = DateTime.now();
   DateTime _due = DateTime.now().add(const Duration(days: 30));
-  final List<InvoiceItem> _items = [const InvoiceItem(description: '', quantity: 1, unitPrice: 0)];
+  bool _isLoading = false; // Declare _isLoading here
+  final List<InvoiceItem> _items = [const InvoiceItem(description: '', quantity: 1, unitPriceKobo: 0)];
 
   @override
   void dispose() {
     _numberCtrl.dispose();
+    _customerNameCtrl.dispose();
     super.dispose();
   }
 
-  void _addItem() => setState(() => _items.add(const InvoiceItem(description: '', quantity: 1, unitPrice: 0)));
+  void _addItem() => setState(() => _items.add(const InvoiceItem(description: '', quantity: 1, unitPriceKobo: 0)));
   void _removeItem(int i) => setState(() => _items.removeAt(i));
 
-  double get total => _items.fold(0, (s, i) => s + i.quantity * i.unitPrice);
+  int get totalKobo => _items.fold(0, (s, i) => s + i.quantity * i.unitPriceKobo);
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate() || _customer == null) return;
+    // Add a loading state to prevent double taps
+    setState(() => _isLoading = true);
+
+    // Improved validation with user feedback
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill in all required fields.'), backgroundColor: Colors.orange));
+      setState(() => _isLoading = false); // Reset loading state on validation fail
+      return;
+    }
 
     final invoice = Invoice(
-      id: const Uuid().v4(),
-      customerId: _customer!.id,
-      customerName: _customer!.name,
-      customerEmail: _customer!.email ?? '',
-      customerPhone: _customer!.phone ?? '',
+      // Customer details are now manually entered
+      customerName: _customerNameCtrl.text.trim(),
+      customerEmail: '', // These can be added as optional fields later
+      customerPhone: '',
       invoiceNumber: _numberCtrl.text,
       dateIssued: _issued,
       dueDate: _due,
       items: _items,
-      totalAmount: total,
+      totalAmount: totalKobo / 100.0, // Calculate total amount from kobo
       status: 'Pending',
     );
 
-    await ref.read(invoiceNotifierProvider.notifier).addInvoice(invoice);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invoice created!')));
-      context.pop();
+    try {
+      // Use the repository to create the invoice and invalidate the list provider
+      await ref.read(invoiceRepositoryProvider).createInvoice(invoice);
+      ref.invalidate(invoiceListProvider); // Refresh the invoice list
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invoice created!'), backgroundColor: Colors.green));
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create invoice: $e'), backgroundColor: Colors.red));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -95,28 +116,14 @@ class _InvoiceCreateScreenState extends ConsumerState<InvoiceCreateScreen> {
                       key: _formKey,
                       child: SingleChildScrollView(
                         child: Column(children: [
-                          // Customer + Number
-                          Row(children: [
-                            Expanded(
-                              child: Consumer(builder: (context, ref, _) {
-                                final customers = ref.watch(customersProvider);
-                                return customers.when(
-                                  data: (list) => DropdownButtonFormField<Customer>(
-                                    value: _customer,
-                                    decoration: _inputDec('Customer *', Icons.person),
-                                    items: list.map((c) => DropdownMenuItem(value: c, child: Text(c.name))).toList(),
-                                    onChanged: (v) => setState(() => _customer = v),
-                                    validator: (_) => _customer == null ? 'Required' : null,
-                                  ),
-                                  loading: () => const LinearProgressIndicator(),
-                                  error: (_, __) => const Text('Error loading customers'),
-                                );
-                              }),
-                            ),
+                          // Use Wrap for better responsiveness on mobile
+                          Wrap(
+                            runSpacing: 16,
+                            spacing: 16,
+                            children: [
+                            SizedBox(width: isWeb ? 400 : double.infinity, child: TextFormField(controller: _customerNameCtrl, decoration: _inputDec('Customer Name *', Icons.person), validator: (v) => v!.isEmpty ? 'Required' : null)),
                             const SizedBox(width: 16),
                             SizedBox(width: 200, child: TextFormField(controller: _numberCtrl, decoration: _inputDec('Invoice #', Icons.numbers), validator: (v) => v!.isEmpty ? 'Required' : null)),
-                            const SizedBox(width: 16),
-                            IconButton.filled(onPressed: () => ref.read(customerNotifierProvider.notifier), icon: const Icon(Icons.add)),
                           ]),
 
                           const SizedBox(height: 24),
@@ -135,7 +142,7 @@ class _InvoiceCreateScreenState extends ConsumerState<InvoiceCreateScreen> {
                           ]),
 
                           const SizedBox(height: 32),
-                          const Align(alignment: Alignment.centerLeft, child: Text('Items', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
+                          Align(alignment: Alignment.centerLeft, child: Text('Items', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
 
                           ..._items.asMap().entries.map((e) {
                             final i = e.key; final item = e.value;
@@ -149,7 +156,7 @@ class _InvoiceCreateScreenState extends ConsumerState<InvoiceCreateScreen> {
                           // Total
                           Align(
                             alignment: Alignment.centerRight,
-                            child: Text('Total: ₦${total.toStringAsFixed(2)}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                            child: Text('Total: ₦${(totalKobo / 100.0).toStringAsFixed(2)}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.primary)),
                           ),
 
                           const SizedBox(height: 32),
@@ -157,10 +164,12 @@ class _InvoiceCreateScreenState extends ConsumerState<InvoiceCreateScreen> {
                           SizedBox(
                             width: double.infinity,
                             height: 60,
-                            child: ElevatedButton(
-                              onPressed: _save,
+                            child: ElevatedButton(  
+                              onPressed: _isLoading ? null : _save,
                               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 10),
-                              child: const Text('Create Invoice', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                              child: _isLoading
+                                  ? const CircularProgressIndicator(color: Colors.white)
+                                  : const Text('Create Invoice', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                             ),
                           ),
                         ]),
@@ -205,11 +214,11 @@ class _ItemRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(children: [
-        Expanded(flex: 4, child: TextFormField(initialValue: item.description, decoration: const InputDecoration(labelText: 'Description'), onChanged: (v) => onChanged(item.copyWith(description: v)))),
+        Expanded(flex: 4, child: TextFormField(initialValue: item.description, decoration: const InputDecoration(labelText: 'Description'), validator: (v) => v!.isEmpty ? 'Required' : null, onChanged: (v) => onChanged(item.copyWith(description: v)))),
         const SizedBox(width: 8),
-        SizedBox(width: 80, child: TextFormField(initialValue: item.quantity.toString(), keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Qty'), onChanged: (v) => onChanged(item.copyWith(quantity: int.tryParse(v) ?? 1)))),
+        SizedBox(width: 80, child: TextFormField(initialValue: item.quantity.toString(), keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Qty'), validator: (v) => (int.tryParse(v ?? '0') ?? 0) <= 0 ? 'Invalid' : null, onChanged: (v) => onChanged(item.copyWith(quantity: int.tryParse(v) ?? 1)))),
         const SizedBox(width: 8),
-        SizedBox(width: 120, child: TextFormField(initialValue: item.unitPrice.toStringAsFixed(2), keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Price'), onChanged: (v) => onChanged(item.copyWith(unitPrice: double.tryParse(v) ?? 0)))),
+        SizedBox(width: 120, child: TextFormField(initialValue: (item.unitPriceKobo / 100.0).toStringAsFixed(2), keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Price (₦)'), validator: (v) => (double.tryParse(v ?? '0') ?? 0) <= 0 ? 'Invalid' : null, onChanged: (v) => onChanged(item.copyWith(unitPriceKobo: ((double.tryParse(v) ?? 0) * 100).toInt())))),
         IconButton(onPressed: onDelete, icon: const Icon(Icons.delete, color: Colors.red)),
       ]),
     );

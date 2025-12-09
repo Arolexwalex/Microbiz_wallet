@@ -1,42 +1,72 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
-import 'package:new_new_microbiz_wallet/src/data/dio_provider.dart';
-import 'package:new_new_microbiz_wallet/src/data/invoice_repository.dart';
-import 'invoice_model.dart';
+import 'package:new_new_microbiz_wallet/src/state/auth_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'invoice_model.dart'; // Use the official Invoice model
 
-final invoiceRepositoryProvider = Provider<InvoiceRepository>((ref) {
-  // Make sure you have this provider somewhere
-  return InvoiceRepository(ref.read(dioProvider));
-});
+class InvoiceRepository {
+  final SupabaseClient _supabase;
+  InvoiceRepository(this._supabase);
 
-// List of all invoices
-final invoicesProvider = FutureProvider.autoDispose<List<Invoice>>((ref) async {
-  return ref.watch(invoiceRepositoryProvider).getInvoices();
-});
+  Future<List<Invoice>> getInvoices() async {
+    final data = await _supabase.from('invoices').select().order('date_issued', ascending: false);
+    return data.map((item) => Invoice.fromJson(item)).toList();
+  }
 
-// Single invoice by ID — THIS WAS MISSING!
-final invoiceDetailProvider = FutureProvider.family<Invoice?, String>((ref, id) async {
-  return ref.watch(invoiceRepositoryProvider).getInvoiceById(id);
-});
-
-// Notifier for adding invoices
-final invoiceNotifierProvider = StateNotifierProvider<InvoiceNotifier, AsyncValue<void>>((ref) {
-  return InvoiceNotifier(ref);
-});
-
-class InvoiceNotifier extends StateNotifier<AsyncValue<void>> {
-  final Ref _ref;
-  InvoiceNotifier(this._ref) : super(const AsyncData(null));
-
-  Future<void> addInvoice(Invoice invoice) async {
-    state = const AsyncLoading();
+  /// Fetches a single invoice by its ID from Supabase.
+  Future<Invoice?> getInvoiceById(int id) async {
     try {
-      await _ref.read(invoiceRepositoryProvider).addInvoice(invoice);
-      _ref.invalidate(invoicesProvider);
-      state = const AsyncData(null);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      rethrow;
+      // Use .eq() to filter by id and .single() to get one record.
+      final data = await _supabase.from('invoices').select().eq('id', id).single();
+      return Invoice.fromJson(data);
+    } catch (e) {
+      // If .single() finds no rows, it throws an error. We return null in that case.
+      return null;
+    }
+  }
+
+  /// Creates a new invoice and its associated items in Supabase.
+  Future<void> createInvoice(Invoice invoice) async {
+    try {
+      // Step 1: Insert the main invoice record and select its newly generated ID.
+      final newInvoiceData = await _supabase
+          .from('invoices')
+          .insert(invoice.toSupabaseJson())
+          .select('id')
+          .single();
+
+      final newInvoiceId = newInvoiceData['id'];
+
+      // Step 2: Prepare the line items by adding the new invoice_id to each.
+      final itemsToInsert = invoice.items.map((item) {
+        // Manually create the map to ensure correct keys for Supabase
+        return {
+          'invoice_id': newInvoiceId,
+          'description': item.description,
+          'quantity': item.quantity,
+          'unit_price_kobo': item.unitPriceKobo, // Use the correct integer field
+        };
+      }).toList();
+
+      // Step 3: Bulk insert all the line items.
+      await _supabase.from('invoice_items').insert(itemsToInsert);
+    } catch (e) {
+      print('Error creating invoice: $e');
+      throw Exception('Failed to create invoice.');
     }
   }
 }
+
+final invoiceRepositoryProvider = Provider<InvoiceRepository>((ref) {
+  return InvoiceRepository(ref.watch(supabaseProvider));
+});
+
+final invoiceListProvider = FutureProvider.autoDispose<List<Invoice>>((ref) {
+  // This will automatically re-fetch when the user logs in or out.
+  ref.watch(authStateChangesProvider);
+  return ref.watch(invoiceRepositoryProvider).getInvoices();
+});
+
+/// A provider that fetches a single invoice by its ID.
+final invoiceDetailProvider = FutureProvider.family.autoDispose<Invoice?, int>((ref, id) {
+  return ref.watch(invoiceRepositoryProvider).getInvoiceById(id);
+});

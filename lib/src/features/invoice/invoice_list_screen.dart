@@ -11,7 +11,7 @@ class InvoiceListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final invoices = ref.watch(invoicesProvider);
+    final invoices = ref.watch(invoiceListProvider);
     final isWeb = MediaQuery.of(context).size.width > 900;
 
     return Scaffold(

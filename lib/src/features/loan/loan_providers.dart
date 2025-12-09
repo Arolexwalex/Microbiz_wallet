@@ -43,7 +43,7 @@ class LoanRepository {
 }
 
 final loanRepositoryProvider = Provider<LoanRepository>((ref) {
-  return LoanRepository(ref.read(supabaseProvider));
+  return LoanRepository(ref.watch(supabaseProvider));
 });
 
 final loanApplicationsProvider = FutureProvider.autoDispose<List<LoanApplication>>((ref) {

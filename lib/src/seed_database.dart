@@ -64,7 +64,7 @@ Future<void> main() async {
       allRecords.add({
         'date': DateTime(month.year, month.month, 1 + random.nextInt(daysInMonth)).toIso8601String(),
         'description': 'Sale of Item #${random.nextInt(1000)}',
-        'amount_kobo': (10000 + random.nextInt(150000)) * 100, // ₦10k to ₦150k
+        'amount_kobo': ((10000 + random.nextInt(150000)) * 100).toInt(), // ₦10k to ₦150k
         'type': 'sale',
         'category': salesCategories[random.nextInt(salesCategories.length)],
       });
@@ -76,7 +76,7 @@ Future<void> main() async {
       allRecords.add({
         'date': DateTime(month.year, month.month, 1 + random.nextInt(daysInMonth)).toIso8601String(),
         'description': 'Payment for ${expenseCategories[random.nextInt(expenseCategories.length)]}',
-        'amount_kobo': (5000 + random.nextInt(80000)) * 100, // ₦5k to ₦80k
+        'amount_kobo': ((5000 + random.nextInt(80000)) * 100).toInt(), // ₦5k to ₦80k
         'type': 'expense',
         'category': expenseCategories[random.nextInt(expenseCategories.length)],
       });

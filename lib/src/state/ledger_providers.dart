@@ -6,7 +6,7 @@ import 'auth_providers.dart';
 
 final ledgerRepositoryProvider = Provider<LedgerRepository>((ref) {
   // The repository now needs the Supabase client
-  return LedgerRepository(ref.read(supabaseProvider));
+  return LedgerRepository(ref.watch(supabaseProvider));
 });
 
 final ledgerRecordsProvider = FutureProvider.autoDispose<List<LedgerRecord>>((ref) async {

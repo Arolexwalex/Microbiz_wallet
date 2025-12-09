@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod for ref
+import 'package:new_new_microbiz_wallet/src/features/invoice/invoice_model.dart';
 import 'package:new_new_microbiz_wallet/src/features/invoice/invoice_providers.dart';
 import 'package:new_new_microbiz_wallet/src/theme/theme.dart';
 import '../../widgets/curved_header.dart';
-import 'invoice_model.dart';
 import '../../utils/utils.dart';
 
 /// A provider that derives the list of outstanding debts from the main invoicesProvider.
 /// This is efficient as it doesn't make a new network request.
 final outstandingDebtsProvider = Provider<List<Invoice>>((ref) {
-  final invoicesAsyncValue = ref.watch(invoicesProvider);
+  final invoicesAsyncValue = ref.watch(invoiceListProvider);
   return invoicesAsyncValue.asData?.value.where((invoice) => invoice.status != 'Paid').toList() ?? [];
 });
 
@@ -54,7 +54,7 @@ class DebtTrackerScreen extends ConsumerWidget {
                           final d = debts[i];
                           final overdue = d.dueDate.isBefore(DateTime.now()) && d.status != 'Paid';
                           return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            margin: const EdgeInsets.symmetric(vertical: 10),
                             elevation: 8,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: ListTile(
@@ -64,7 +64,7 @@ class DebtTrackerScreen extends ConsumerWidget {
                                 Text('#${d.invoiceNumber} • Due ${d.dueDate.toLocal().toShortDateString()}'),
                                 if (overdue) const Text('OVERDUE', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                               ]),
-                              trailing: Text('₦${d.totalAmount.toStringAsFixed(0)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.red)),
+                              trailing: Text('₦${d.totalAmount.toStringAsFixed(0)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.redAccent)),
                               onTap: () => context.push('/invoice/${d.id}'),
                             ),
                           );

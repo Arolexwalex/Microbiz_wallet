@@ -7,7 +7,7 @@ part 'invoice_model.g.dart';
 @freezed
 abstract class Invoice with _$Invoice {
   const factory Invoice({
-    required String id,
+    int? id,
     int? customerId,
     required String customerName,
     required String customerEmail,
@@ -28,8 +28,22 @@ abstract class InvoiceItem with _$InvoiceItem {
   const factory InvoiceItem({
     required String description,
     required int quantity,
-    required double unitPrice,
+    required int unitPriceKobo,
   }) = _InvoiceItem;
 
   factory InvoiceItem.fromJson(Map<String, dynamic> json) => _$InvoiceItemFromJson(json);
+}
+
+extension InvoiceSupabaseX on Invoice {
+  /// Helper method to format data for Supabase insertion, excluding fields
+  /// that the database generates automatically (like id and totalAmount).
+  Map<String, dynamic> toSupabaseJson() => {
+        'customer_name': customerName,
+        'customer_email': customerEmail,
+        'customer_phone': customerPhone,
+        'invoice_number': invoiceNumber,
+        'date_issued': dateIssued.toIso8601String(),
+        'due_date': dueDate.toIso8601String(),
+        'status': status,
+      };
 }

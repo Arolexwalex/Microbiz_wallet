@@ -7,7 +7,7 @@ import '../../widgets/curved_header.dart';
 import 'invoice_providers.dart';
 
 class InvoiceDetailScreen extends ConsumerWidget {
-  final String invoiceId;
+  final int invoiceId;
   const InvoiceDetailScreen({super.key, required this.invoiceId});
 
   @override
@@ -76,8 +76,8 @@ class InvoiceDetailScreen extends ConsumerWidget {
                                           children: [
                                             Expanded(flex: 3, child: Text(item.description, style: const TextStyle(fontSize: 16))),
                                             Expanded(child: Text('× ${item.quantity}', textAlign: TextAlign.center)),
-                                            Expanded(child: Text('₦${item.unitPrice.toStringAsFixed(2)}', textAlign: TextAlign.end)),
-                                            Expanded(child: Text('₦${(item.quantity * item.unitPrice).toStringAsFixed(2)}', textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                            Expanded(child: Text('₦${(item.unitPriceKobo / 100).toStringAsFixed(2)}', textAlign: TextAlign.end)),
+                                            Expanded(child: Text('₦${((item.quantity * item.unitPriceKobo) / 100).toStringAsFixed(2)}', textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.bold))),
                                           ],
                                         ),
                                       )),

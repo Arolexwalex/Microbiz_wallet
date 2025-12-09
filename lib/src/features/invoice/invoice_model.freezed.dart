@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Invoice implements DiagnosticableTreeMixin {
 
- String get id; int? get customerId; String get customerName; String get customerEmail; String get customerPhone; String get invoiceNumber; DateTime get dateIssued; DateTime get dueDate; List<InvoiceItem> get items; double get totalAmount; String get status;
+ int? get id; int? get customerId; String get customerName; String get customerEmail; String get customerPhone; String get invoiceNumber; DateTime get dateIssued; DateTime get dueDate; List<InvoiceItem> get items; double get totalAmount; String get status;
 /// Create a copy of Invoice
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,7 +54,7 @@ abstract mixin class $InvoiceCopyWith<$Res>  {
   factory $InvoiceCopyWith(Invoice value, $Res Function(Invoice) _then) = _$InvoiceCopyWithImpl;
 @useResult
 $Res call({
- String id, int? customerId, String customerName, String customerEmail, String customerPhone, String invoiceNumber, DateTime dateIssued, DateTime dueDate, List<InvoiceItem> items, double totalAmount, String status
+ int? id, int? customerId, String customerName, String customerEmail, String customerPhone, String invoiceNumber, DateTime dateIssued, DateTime dueDate, List<InvoiceItem> items, double totalAmount, String status
 });
 
 
@@ -71,10 +71,10 @@ class _$InvoiceCopyWithImpl<$Res>
 
 /// Create a copy of Invoice
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? customerId = freezed,Object? customerName = null,Object? customerEmail = null,Object? customerPhone = null,Object? invoiceNumber = null,Object? dateIssued = null,Object? dueDate = null,Object? items = null,Object? totalAmount = null,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? customerId = freezed,Object? customerName = null,Object? customerEmail = null,Object? customerPhone = null,Object? invoiceNumber = null,Object? dateIssued = null,Object? dueDate = null,Object? items = null,Object? totalAmount = null,Object? status = null,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
 as int?,customerName: null == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
 as String,customerEmail: null == customerEmail ? _self.customerEmail : customerEmail // ignore: cast_nullable_to_non_nullable
 as String,customerPhone: null == customerPhone ? _self.customerPhone : customerPhone // ignore: cast_nullable_to_non_nullable
@@ -169,7 +169,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int? customerId,  String customerName,  String customerEmail,  String customerPhone,  String invoiceNumber,  DateTime dateIssued,  DateTime dueDate,  List<InvoiceItem> items,  double totalAmount,  String status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int? customerId,  String customerName,  String customerEmail,  String customerPhone,  String invoiceNumber,  DateTime dateIssued,  DateTime dueDate,  List<InvoiceItem> items,  double totalAmount,  String status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Invoice() when $default != null:
 return $default(_that.id,_that.customerId,_that.customerName,_that.customerEmail,_that.customerPhone,_that.invoiceNumber,_that.dateIssued,_that.dueDate,_that.items,_that.totalAmount,_that.status);case _:
@@ -190,7 +190,7 @@ return $default(_that.id,_that.customerId,_that.customerName,_that.customerEmail
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int? customerId,  String customerName,  String customerEmail,  String customerPhone,  String invoiceNumber,  DateTime dateIssued,  DateTime dueDate,  List<InvoiceItem> items,  double totalAmount,  String status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int? customerId,  String customerName,  String customerEmail,  String customerPhone,  String invoiceNumber,  DateTime dateIssued,  DateTime dueDate,  List<InvoiceItem> items,  double totalAmount,  String status)  $default,) {final _that = this;
 switch (_that) {
 case _Invoice():
 return $default(_that.id,_that.customerId,_that.customerName,_that.customerEmail,_that.customerPhone,_that.invoiceNumber,_that.dateIssued,_that.dueDate,_that.items,_that.totalAmount,_that.status);case _:
@@ -210,7 +210,7 @@ return $default(_that.id,_that.customerId,_that.customerName,_that.customerEmail
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int? customerId,  String customerName,  String customerEmail,  String customerPhone,  String invoiceNumber,  DateTime dateIssued,  DateTime dueDate,  List<InvoiceItem> items,  double totalAmount,  String status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int? customerId,  String customerName,  String customerEmail,  String customerPhone,  String invoiceNumber,  DateTime dateIssued,  DateTime dueDate,  List<InvoiceItem> items,  double totalAmount,  String status)?  $default,) {final _that = this;
 switch (_that) {
 case _Invoice() when $default != null:
 return $default(_that.id,_that.customerId,_that.customerName,_that.customerEmail,_that.customerPhone,_that.invoiceNumber,_that.dateIssued,_that.dueDate,_that.items,_that.totalAmount,_that.status);case _:
@@ -225,10 +225,10 @@ return $default(_that.id,_that.customerId,_that.customerName,_that.customerEmail
 @JsonSerializable()
 
 class _Invoice with DiagnosticableTreeMixin implements Invoice {
-  const _Invoice({required this.id, this.customerId, required this.customerName, required this.customerEmail, required this.customerPhone, required this.invoiceNumber, required this.dateIssued, required this.dueDate, required final  List<InvoiceItem> items, required this.totalAmount, this.status = 'Pending'}): _items = items;
+  const _Invoice({this.id, this.customerId, required this.customerName, required this.customerEmail, required this.customerPhone, required this.invoiceNumber, required this.dateIssued, required this.dueDate, required final  List<InvoiceItem> items, required this.totalAmount, this.status = 'Pending'}): _items = items;
   factory _Invoice.fromJson(Map<String, dynamic> json) => _$InvoiceFromJson(json);
 
-@override final  String id;
+@override final  int? id;
 @override final  int? customerId;
 @override final  String customerName;
 @override final  String customerEmail;
@@ -285,7 +285,7 @@ abstract mixin class _$InvoiceCopyWith<$Res> implements $InvoiceCopyWith<$Res> {
   factory _$InvoiceCopyWith(_Invoice value, $Res Function(_Invoice) _then) = __$InvoiceCopyWithImpl;
 @override @useResult
 $Res call({
- String id, int? customerId, String customerName, String customerEmail, String customerPhone, String invoiceNumber, DateTime dateIssued, DateTime dueDate, List<InvoiceItem> items, double totalAmount, String status
+ int? id, int? customerId, String customerName, String customerEmail, String customerPhone, String invoiceNumber, DateTime dateIssued, DateTime dueDate, List<InvoiceItem> items, double totalAmount, String status
 });
 
 
@@ -302,10 +302,10 @@ class __$InvoiceCopyWithImpl<$Res>
 
 /// Create a copy of Invoice
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? customerId = freezed,Object? customerName = null,Object? customerEmail = null,Object? customerPhone = null,Object? invoiceNumber = null,Object? dateIssued = null,Object? dueDate = null,Object? items = null,Object? totalAmount = null,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? customerId = freezed,Object? customerName = null,Object? customerEmail = null,Object? customerPhone = null,Object? invoiceNumber = null,Object? dateIssued = null,Object? dueDate = null,Object? items = null,Object? totalAmount = null,Object? status = null,}) {
   return _then(_Invoice(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
 as int?,customerName: null == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
 as String,customerEmail: null == customerEmail ? _self.customerEmail : customerEmail // ignore: cast_nullable_to_non_nullable
 as String,customerPhone: null == customerPhone ? _self.customerPhone : customerPhone // ignore: cast_nullable_to_non_nullable
@@ -326,7 +326,7 @@ as String,
 /// @nodoc
 mixin _$InvoiceItem implements DiagnosticableTreeMixin {
 
- String get description; int get quantity; double get unitPrice;
+ String get description; int get quantity; int get unitPriceKobo;
 /// Create a copy of InvoiceItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -340,21 +340,21 @@ $InvoiceItemCopyWith<InvoiceItem> get copyWith => _$InvoiceItemCopyWithImpl<Invo
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'InvoiceItem'))
-    ..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('quantity', quantity))..add(DiagnosticsProperty('unitPrice', unitPrice));
+    ..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('quantity', quantity))..add(DiagnosticsProperty('unitPriceKobo', unitPriceKobo));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InvoiceItem&&(identical(other.description, description) || other.description == description)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InvoiceItem&&(identical(other.description, description) || other.description == description)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unitPriceKobo, unitPriceKobo) || other.unitPriceKobo == unitPriceKobo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,description,quantity,unitPrice);
+int get hashCode => Object.hash(runtimeType,description,quantity,unitPriceKobo);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'InvoiceItem(description: $description, quantity: $quantity, unitPrice: $unitPrice)';
+  return 'InvoiceItem(description: $description, quantity: $quantity, unitPriceKobo: $unitPriceKobo)';
 }
 
 
@@ -365,7 +365,7 @@ abstract mixin class $InvoiceItemCopyWith<$Res>  {
   factory $InvoiceItemCopyWith(InvoiceItem value, $Res Function(InvoiceItem) _then) = _$InvoiceItemCopyWithImpl;
 @useResult
 $Res call({
- String description, int quantity, double unitPrice
+ String description, int quantity, int unitPriceKobo
 });
 
 
@@ -382,12 +382,12 @@ class _$InvoiceItemCopyWithImpl<$Res>
 
 /// Create a copy of InvoiceItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? description = null,Object? quantity = null,Object? unitPrice = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? description = null,Object? quantity = null,Object? unitPriceKobo = null,}) {
   return _then(_self.copyWith(
 description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,unitPrice: null == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
-as double,
+as int,unitPriceKobo: null == unitPriceKobo ? _self.unitPriceKobo : unitPriceKobo // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -472,10 +472,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String description,  int quantity,  double unitPrice)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String description,  int quantity,  int unitPriceKobo)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InvoiceItem() when $default != null:
-return $default(_that.description,_that.quantity,_that.unitPrice);case _:
+return $default(_that.description,_that.quantity,_that.unitPriceKobo);case _:
   return orElse();
 
 }
@@ -493,10 +493,10 @@ return $default(_that.description,_that.quantity,_that.unitPrice);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String description,  int quantity,  double unitPrice)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String description,  int quantity,  int unitPriceKobo)  $default,) {final _that = this;
 switch (_that) {
 case _InvoiceItem():
-return $default(_that.description,_that.quantity,_that.unitPrice);case _:
+return $default(_that.description,_that.quantity,_that.unitPriceKobo);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -513,10 +513,10 @@ return $default(_that.description,_that.quantity,_that.unitPrice);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String description,  int quantity,  double unitPrice)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String description,  int quantity,  int unitPriceKobo)?  $default,) {final _that = this;
 switch (_that) {
 case _InvoiceItem() when $default != null:
-return $default(_that.description,_that.quantity,_that.unitPrice);case _:
+return $default(_that.description,_that.quantity,_that.unitPriceKobo);case _:
   return null;
 
 }
@@ -528,12 +528,12 @@ return $default(_that.description,_that.quantity,_that.unitPrice);case _:
 @JsonSerializable()
 
 class _InvoiceItem with DiagnosticableTreeMixin implements InvoiceItem {
-  const _InvoiceItem({required this.description, required this.quantity, required this.unitPrice});
+  const _InvoiceItem({required this.description, required this.quantity, required this.unitPriceKobo});
   factory _InvoiceItem.fromJson(Map<String, dynamic> json) => _$InvoiceItemFromJson(json);
 
 @override final  String description;
 @override final  int quantity;
-@override final  double unitPrice;
+@override final  int unitPriceKobo;
 
 /// Create a copy of InvoiceItem
 /// with the given fields replaced by the non-null parameter values.
@@ -549,21 +549,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'InvoiceItem'))
-    ..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('quantity', quantity))..add(DiagnosticsProperty('unitPrice', unitPrice));
+    ..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('quantity', quantity))..add(DiagnosticsProperty('unitPriceKobo', unitPriceKobo));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InvoiceItem&&(identical(other.description, description) || other.description == description)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InvoiceItem&&(identical(other.description, description) || other.description == description)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unitPriceKobo, unitPriceKobo) || other.unitPriceKobo == unitPriceKobo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,description,quantity,unitPrice);
+int get hashCode => Object.hash(runtimeType,description,quantity,unitPriceKobo);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'InvoiceItem(description: $description, quantity: $quantity, unitPrice: $unitPrice)';
+  return 'InvoiceItem(description: $description, quantity: $quantity, unitPriceKobo: $unitPriceKobo)';
 }
 
 
@@ -574,7 +574,7 @@ abstract mixin class _$InvoiceItemCopyWith<$Res> implements $InvoiceItemCopyWith
   factory _$InvoiceItemCopyWith(_InvoiceItem value, $Res Function(_InvoiceItem) _then) = __$InvoiceItemCopyWithImpl;
 @override @useResult
 $Res call({
- String description, int quantity, double unitPrice
+ String description, int quantity, int unitPriceKobo
 });
 
 
@@ -591,12 +591,12 @@ class __$InvoiceItemCopyWithImpl<$Res>
 
 /// Create a copy of InvoiceItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? description = null,Object? quantity = null,Object? unitPrice = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? description = null,Object? quantity = null,Object? unitPriceKobo = null,}) {
   return _then(_InvoiceItem(
 description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,unitPrice: null == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
-as double,
+as int,unitPriceKobo: null == unitPriceKobo ? _self.unitPriceKobo : unitPriceKobo // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
